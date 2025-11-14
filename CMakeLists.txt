@@ -15,7 +15,7 @@ find_package(glfw3 REQUIRED)
 file(GLOB_RECURSE SOURCE_FILES "src/*.cpp")
 
 # Create executable
-add_executable(Simple3DGame ${SOURCE_FILES})
+add_executable(Simple3DGame ${SOURCE_FILES} vendor/stb_image.h)
 
 # Link libraries
 target_link_libraries(Simple3DGame
