@@ -25,9 +25,17 @@ GLuint createShaderProgram(const char* vertexPath, const char* fragmentPath);
 // Window dimensions
 const GLuint WIDTH = 800, HEIGHT = 600;
 
+// Camera
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f, 0.0f);
+
 // Camera movement
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
+// Key state tracking
+bool keys[1024];
 
 // The MAIN function, from here we start the application and run the game loop
 int main()
@@ -51,6 +59,9 @@ int main()
     glfwMakeContextCurrent(window);
     // Set the required callback functions
     glfwSetKeyCallback(window, key_callback);
+    
+    // Initialize keys array
+    for (int i = 0; i < 1024; ++i) keys[i] = false;
 
     // Set this to true so GLEW knows to use a modern approach to retrieving function pointers and extensions
     glewExperimental = GL_TRUE;
@@ -164,8 +175,8 @@ int main()
         // 1. Model matrix: Rotate the cube over time
         model = glm::rotate(model, (GLfloat)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
         
-        // 2. View matrix: Move the camera back
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        // 2. View matrix: Camera controlled by user input
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
         
         // 3. Projection matrix: Perspective projection
         projection = glm::perspective(glm::radians(45.0f), (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
@@ -204,11 +215,28 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     // closing the application
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
+
+    if (key >= 0 && key < 1024)
+    {
+        if (action == GLFW_PRESS)
+            keys[key] = true;
+        else if (action == GLFW_RELEASE)
+            keys[key] = false;
+    }
 }
 
 void do_movement()
 {
-    // No movement implemented yet
+    // Camera controls
+    GLfloat cameraSpeed = 5.0f * deltaTime;
+    if (keys[GLFW_KEY_W])
+        cameraPos += cameraSpeed * cameraFront;
+    if (keys[GLFW_KEY_S])
+        cameraPos -= cameraSpeed * cameraFront;
+    if (keys[GLFW_KEY_A])
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (keys[GLFW_KEY_D])
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 // Utility function for compiling a single shader
