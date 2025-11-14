@@ -1,0 +1,3 @@
+/home/ubuntu/Simple3DGame/build/CMakeFiles/Simple3DGame.dir
+/home/ubuntu/Simple3DGame/build/CMakeFiles/edit_cache.dir
+/home/ubuntu/Simple3DGame/build/CMakeFiles/rebuild_cache.dir
